@@ -1,0 +1,211 @@
+---
+title: "Assignment 4: Making Maps"
+format: html
+editor: visual
+author: "Aba Pobee"
+---
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE) 
+```
+## 1. Continous Variable Exploration
+
+I chose to explore CDC data on excessive alcohol use in the United States. This [CDC dataset](https://www.cdc.gov/alcohol/excessive-drinking-data/index.html) rovides statistics on binge and heavy drinking patterns across the U.S., including prevalence, frequency, and demographic breakdowns in 2022. Specifically, I'm choosing to map and look at the largest number of drinks consumed on an occasion among people who binge drink (for males, binge drinking is defined as having five or more drinks on one occasion; for females, this is defined as having four or more drinks on one occasion.
+
+a\. Blank map
+
+```{r blank map}
+library(tigris)
+library(sf)
+library(tidyverse)
+
+options(tigris_use_cache = TRUE)
+
+# Get 2021 shapefile of states
+states_sf <- states(cb = TRUE, year = 2021) %>%
+  filter(!STUSPS %in% c("AK", "HI", "PR"))  # Drop Alaska, Hawaii, Puerto Rico
+
+# Blank map of the lower 48
+ggplot(states_sf) +
+  geom_sf(fill = "white", color = "black") +
+  coord_sf(xlim = c(-125, -66), ylim = c(24, 50), expand = FALSE) +
+  theme_minimal() +
+  labs(title = "Blank Map of Contiguous United States")
+
+```
+
+b\. Creating a cloropleth map
+```{r cloropleth map}
+library(tigris)
+library(sf)
+library(tidyverse)
+
+options(tigris_use_cache = TRUE)
+
+# Step 1: Load shapefile of contiguous U.S. states
+states_sf <- states(cb = TRUE, year = 2021) %>%
+  filter(!STUSPS %in% c("AK", "HI", "PR"))  # drop non-contiguous states
+
+# Step 2: Load and clean drinks dataset
+drinks <- read_csv("numberofdrinks.csv")
+
+drinks_median <- drinks %>%
+  filter(key == "No. of Drinks (Median)§") %>%
+  select(State, value) %>%
+  mutate(State = str_to_title(State))  # match formatting to "NAME" in shapefile
+
+# Step 3: Join spatial and numeric data
+states_joined <- states_sf %>%
+  left_join(drinks_median, by = c("NAME" = "State"))
+
+# Step 4: Plot the choropleth with zoomed-in coords
+ggplot(states_joined) +
+  geom_sf(aes(fill = as.numeric(value)), color = "black") +
+  scale_fill_gradient(low = "lightyellow", high = "darkred", name = "Median Drinks") +
+  coord_sf(xlim = c(-125, -66), ylim = c(24, 50), expand = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Median Number of Alcoholic Drinks per State",
+    caption = "Source: numberofdrinks.csv"
+  )
+
+```
+
+This map visualizes the median number of alcoholic drinks consumed per binge drinking occasion across the contiguous U.S. states. States shaded in darker red tones report higher median values, suggesting more intense drinking patterns in those areas. A clear regional trend may emerge, especially with some states in the Midwest and South showing greater alcohol consumption. The gradient color scheme is effective at showing subtle variations in drink levels while preserving a continuous sense of difference across states. However, it may be slightly harder for viewers to quickly classify states into distinct levels of risk or concern.
+
+c\. Classed cloropleth map
+```{r classing}
+# Add bins to the dataset
+states_joined <- states_joined %>%
+  mutate(
+    drinks_bin = cut(
+      as.numeric(value),
+      breaks = quantile(as.numeric(value), probs = seq(0, 1, 0.2), na.rm = TRUE),
+      include.lowest = TRUE,
+      labels = c("Very Low", "Low", "Medium", "High", "Very High")
+    )
+  )
+```
+
+```{r classed cloropleth map}
+ggplot(states_joined) +
+  geom_sf(aes(fill = drinks_bin), color = "black") +
+  scale_fill_brewer(palette = "YlOrRd", name = "Median Drinks (binned)") +
+  coord_sf(xlim = c(-125, -66), ylim = c(24, 50), expand = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Median Number of Alcoholic Drinks (Classed by Quantiles)",
+    caption = "Source: numberofdrinks.csv"
+  )
+```
+This version of the map uses a classed color scheme to break the median number of alcoholic drinks per state into five quantile-based bins, ranging from “Very Low” to “Very High.” Grouping the values like this makes it easier to see general trends and spot outliers quickly. For example, it's much more obvious which states fall into the top or bottom categories compared to the gradient map, where small differences in color might be harder to interpret at a glance.
+That said, using bins also comes with trade-offs. You lose some of the nuance in the data — like the difference between a state with a median of 5.5 drinks and one with 5.9, even though they might end up in the same color group. So while this approach works well for highlighting broader patterns, it might not be the best choice if you're doing more detailed or technical analysis.
+Overall, I’d say the classed color scheme is helpful when the goal is to communicate results clearly to a wider audience, especially for presentations or public-facing projects. But for exploratory analysis or if you want to keep the full resolution of the data, the gradient map is probably better.
+
+## 2. Factor Variable Exploration
+
+a\. Blank map
+```{r maryland map}
+library(tidyverse)
+library(tigris)
+library(sf)
+
+options(tigris_use_cache = TRUE)
+
+md_counties <- counties(state = "MD", cb = TRUE, year = 2021)
+
+ggplot(md_counties) +
+  geom_sf(fill = "white", color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Blank Map of Maryland Counties",
+    caption = "Data Source: U.S. Census Bureau via tigris"
+  )
+```
+b\. Sequential color map
+```{r left join}
+unemployment <- read_csv("mdunemploymentdata.csv")
+
+unemployment <- unemployment %>%
+  mutate(FIPS = str_pad(as.character(FIPS), width = 5, pad = "0"))
+
+md_map <- md_counties %>%
+  left_join(unemployment, by = c("GEOID" = "FIPS"))
+```
+
+```{r sequential color map}
+ggplot(md_map) +
+  geom_sf(aes(fill = `Value (Percent)`), color = "white") +
+  scale_fill_viridis_c(name = "Unemployment Rate (%)") +
+  theme_minimal() +
+  labs(
+    title = "Maryland Unemployment Rate by County (Sequential Color)",
+    caption = "Source: HDPulse"
+  )
+```
+The sequential map shows a smooth gradient of unemployment rates across Maryland counties. Darker colors represent higher unemployment. Baltimore City and several Eastern Shore counties stand out with higher rates, while more affluent counties around D.C. appear lighter. The gradient makes it easy to see relative differences, especially small shifts.
+
+c\. Divergent color map
+```{r divergent color map}
+md_map <- md_map %>%
+  mutate(unemployment_level = case_when(
+    `Value (Percent)` < 4 ~ "Low",
+    `Value (Percent)` < 6 ~ "Moderate",
+    TRUE ~ "High"
+  ))
+
+ggplot(md_map) +
+  geom_sf(aes(fill = unemployment_level), color = "white") +
+  scale_fill_brewer(palette = "RdYlBu", name = "Unemployment Level") +
+  theme_minimal() +
+  labs(
+    title = "Maryland Unemployment Levels by County (Divergent Color)",
+    caption = "Source: HDPulse"
+  )
+
+```
+The divergent map bins counties into “Low,” “Moderate,” and “High” unemployment groups. This approach simplifies interpretation for non-technical audiences and clearly highlights the counties in economic distress. However, it masks finer differences that the sequential map captured. The best map depends on your goal — detailed comparison (sequential) vs. policy action priority (divergent).
+
+## 3. Colorblindr package application
+```{r colorblindr}
+library(dichromat)
+div_colors <- RColorBrewer::brewer.pal(3, "RdYlBu")
+names(div_colors) <- c("High", "Moderate", "Low")
+simulated_colors <- dichromat(div_colors, type = "deutan")
+
+map_deutan <- ggplot(md_map) +
+  geom_sf(aes(fill = unemployment_level), color = "white") +
+  scale_fill_manual(values = simulated_colors, name = "Unemployment Level") +
+  theme_minimal() +
+  labs(
+    title = "Unemployment Map Simulated for Deuteranopia",
+    caption = "Colors processed using dichromat::deutan"
+  )
+
+map_deutan
+
+```
+The original divergent map used the RdYlBu palette, but the dichromat simulation revealed that it performs poorly for individuals with red-green color blindness. Specifically, the “Low” and “High” categories appear similar in hue and brightness, making it difficult to distinguish between them. The “Moderate” level shows slightly more contrast but still doesn’t stand out clearly. To improve accessibility, I would replace this palette with the Okabe-Ito scale, which provides distinct and colorblind-safe color choices.
+
+```{r okabe-ito}
+okabe_ito <- c(
+  "Low" = "#56B4E9",       # Blue
+  "Moderate" = "#E69F00",  # Orange
+  "High" = "#009E73"       # Bluish Green
+)
+simulated_okabe <- dichromat(okabe_ito, type = "deutan")
+
+# Plot simulated map
+map_okabe_cvd <- ggplot(md_map) +
+  geom_sf(aes(fill = unemployment_level), color = "white") +
+  scale_fill_manual(values = simulated_okabe, name = "Unemployment Level") +
+  theme_minimal() +
+  labs(
+    title = "Okabe-Ito Map Simulated for Deuteranopia",
+    caption = "Colors processed using dichromat::deutan"
+  )
+
+# View the CVD-simulated version
+map_okabe_cvd
+
+```
+After applying the Okabe-Ito palette, the resulting map shows excellent contrast across all unemployment categories. Even under simulation for deuteranopia using the dichromat package, the colors remain distinguishable due to their varied hues and luminance levels. Compared to the original RdYlBu palette, this approach significantly improves accessibility. 
