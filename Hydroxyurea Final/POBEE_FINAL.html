@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Aba Pobee">
+
+<title>DATS 2102: Hydroxyurea and the Gaps in Sickle Cell Treatment: A Data-Driven Reflection</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="POBEE_FINAL_files/libs/clipboard/clipboard.min.js"></script>
+<script src="POBEE_FINAL_files/libs/quarto-html/quarto.js"></script>
+<script src="POBEE_FINAL_files/libs/quarto-html/popper.min.js"></script>
+<script src="POBEE_FINAL_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="POBEE_FINAL_files/libs/quarto-html/anchor.min.js"></script>
+<link href="POBEE_FINAL_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="POBEE_FINAL_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="POBEE_FINAL_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="POBEE_FINAL_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="POBEE_FINAL_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">DATS 2102: Hydroxyurea and the Gaps in Sickle Cell Treatment: A Data-Driven Reflection</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Aba Pobee </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="what-is-sickle-cell-disease" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-sickle-cell-disease">What is Sickle Cell Disease?</h2>
+<p>Sickle cell disease is a chronic, inherited blood disorder that primarily affects individuals of African, Mediterranean, Middle Eastern, and Indian ancestry. It is caused by a mutation in the gene that encodes hemoglobin, the protein responsible for carrying oxygen in red blood cells. This mutation leads to the production of abnormal hemoglobin S, which causes red blood cells to become rigid and sickle-shaped. These distorted cells can block blood flow, leading to episodes of severe pain (called vaso-occlusive crises), organ damage, stroke, acute chest syndrome, and increased risk of infection. SCD is associated with significant health disparities in the United States, particularly affecting Black communities, and is considered a marker of structural racism in healthcare access and treatment outcomes.</p>
+<p><img src="images/clipboard-1587923877.png" class="img-fluid"></p>
+<p>Hydroxyurea is the first and most widely used disease-modifying therapy for SCD. It works by increasing the production of fetal hemoglobin (HbF), which helps prevent red blood cells from sickling. Clinical trials have shown that hydroxyurea reduces the frequency of pain crises, need for blood transfusions, hospitalizations, and risk of acute chest syndrome. Despite its benefits, many patients discontinue hydroxyurea treatment due to concerns about side effects, fertility, medication burden, inconsistent follow-up, or lack of perceived effectiveness. Discontinuation is a major concern because it may signal barriers to care or unmet patient needs, particularly in underserved populations.</p>
+<p><strong>Therefore, this project asks:</strong><br>
+<em>What factors are associated with whether a person with sickle cell disease discontinues hydroxyurea therapy?</em></p>
+<p>This question is not only scientifically relevant but personally meaningful to me — my brother has sickle cell disease and is currently taking hydroxyurea. By investigating discontinuation trends, I hope to contribute to a better understanding of how personal and clinical factors affect treatment adherence in this vulnerable population.</p>
+</section>
+<section id="data-sources" class="level2">
+<h2 class="anchored" data-anchor-id="data-sources">Data Sources</h2>
+<p>This project draws upon publicly available data from the supplemental materials of the study titled&nbsp;<em>“Multisite study of hydroxyurea discontinuation among individuals with sickle cell disease”</em>&nbsp;by Kanter et al.&nbsp;(2024), published in&nbsp;<em>PLOS ONE</em>. The dataset is sourced from the article’s&nbsp;<strong>Supplemental Table S2</strong>, which aggregates harmonized participant-level data from five major multicenter clinical studies of individuals living with sickle cell disease in the United States. These studies include:</p>
+<ul>
+<li><p><strong>Baby HUG</strong></p></li>
+<li><p><strong>Comprehensive Sickle Cell Centers (C-Data)</strong></p></li>
+<li><p><strong>Multicenter Study of Hydroxyurea (MSH)</strong></p></li>
+<li><p><strong>Sickle Cell Disease Implementation Consortium (SCDIC)</strong></p></li>
+<li><p><strong>Walk-PHaSST</strong></p></li>
+</ul>
+<p>Each of these studies contributed clinical and demographic data, which were standardized across studies to enable comparative analysis. This harmonization included recoding variables into shared categories, such as genotype groupings, sex, age ranges, and clinical indicators like history of stroke, transfusion, and pain severity.</p>
+<hr>
+<section id="unit-of-analysis" class="level4">
+<h4 class="anchored" data-anchor-id="unit-of-analysis"><strong>Unit of Analysis</strong></h4>
+<ul>
+<li><p><strong>Individual-level data</strong>: Each row in the dataset represents one person living with sickle cell disease.</p></li>
+<li><p>The dataset includes several thousand individuals across different sites and age groups.</p></li>
+</ul>
+<hr>
+</section>
+<section id="time-frame" class="level4">
+<h4 class="anchored" data-anchor-id="time-frame"><strong>Time Frame</strong></h4>
+<ul>
+<li><p>The data reflect clinical assessments and treatment statuses (including hydroxyurea use or discontinuation) from study populations enrolled between approximately&nbsp;<strong>2006–2019</strong>, depending on the contributing study.</p></li>
+<li><p>The dataset itself was harmonized and published as part of a 2024 analysis.</p></li>
+</ul>
+<hr>
+</section>
+<section id="geography" class="level4">
+<h4 class="anchored" data-anchor-id="geography"><strong>Geography</strong></h4>
+<ul>
+<li>The studies span&nbsp;<strong>multiple U.S. clinical sites</strong>, capturing variation across regions and healthcare systems. Specific geographic identifiers are not included in the harmonized dataset, but the original studies encompass both pediatric and adult sickle cell centers nationwide.</li>
+</ul>
+<hr>
+</section>
+<section id="access-and-format" class="level4">
+<h4 class="anchored" data-anchor-id="access-and-format"><strong>Access and Format</strong></h4>
+<ul>
+<li>Data were extracted from a downloadable supplemental Excel file (.xlsx format) provided in the PLOS ONE article.</li>
+</ul>
+</section>
+</section>
+<section id="main-variables-of-interest" class="level2">
+<h2 class="anchored" data-anchor-id="main-variables-of-interest">Main Variables of Interest</h2>
+<p>The goal of this project is to identify demographic and clinical predictors associated with&nbsp;<strong>hydroxyurea (HU) discontinuation</strong>&nbsp;among individuals living with sickle cell disease. To explore this, I focus on one&nbsp;<strong>dependent variable (outcome)</strong>&nbsp;and two&nbsp;<strong>independent variables (predictors)</strong>&nbsp;drawn from the harmonized dataset described in Section 2. These variables were chosen based on their clinical relevance and prevalence in the literature on treatment adherence in chronic conditions.</p>
+<hr>
+<section id="dependent-variable-hydroxyurea-use-group" class="level4">
+<h4 class="anchored" data-anchor-id="dependent-variable-hydroxyurea-use-group"><strong>Dependent Variable: Hydroxyurea Use Group</strong></h4>
+<ul>
+<li><p>This is a&nbsp;<strong>categorical variable</strong>&nbsp;representing whether the individual is currently using hydroxyurea or has discontinued use.</p></li>
+<li><p>In the harmonized dataset, this variable was coded across all five contributing studies and categorized into groups such as:</p>
+<ul>
+<li><p><strong>Continued HU use</strong></p></li>
+<li><p><strong>Discontinued HU use</strong></p></li>
+<li><p><strong>Never used HU</strong>&nbsp;(in some cases, this may be grouped with “discontinued” depending on context or excluded in focused analysis)</p></li>
+</ul></li>
+<li><p><strong>Justification</strong>: Hydroxyurea is a cornerstone therapy for managing sickle cell disease, and understanding why patients stop taking it has both personal and public health significance. Discontinuation is often associated with access issues, side effects, provider communication, or psychosocial factors.</p></li>
+</ul>
+<hr>
+</section>
+<section id="independent-variable-1-genotype" class="level4">
+<h4 class="anchored" data-anchor-id="independent-variable-1-genotype"><strong>Independent Variable 1: Genotype</strong></h4>
+<ul>
+<li><p>This is a&nbsp;<strong>categorical variable</strong>&nbsp;denoting the individual’s sickle cell genotype, harmonized into the following clinical groupings:</p>
+<ul>
+<li><p><strong>HbSS / HbSβ⁰ (Sickle cell anemia – most severe form)</strong></p></li>
+<li><p><strong>HbSC</strong></p></li>
+<li><p><strong>HbSβ⁺</strong></p></li>
+<li><p><strong>Other or Unknown</strong></p></li>
+</ul></li>
+<li><p><strong>Justification</strong>: Genotype is a strong predictor of disease severity. Individuals with HbSS or HbSβ⁰ typically experience more complications and may be more likely to be prescribed hydroxyurea at a young age. However, perceptions of severity, side effects, and efficacy may differ by genotype, influencing discontinuation patterns.</p></li>
+</ul>
+<hr>
+</section>
+<section id="independent-variable-2-sex" class="level4">
+<h4 class="anchored" data-anchor-id="independent-variable-2-sex"><strong>Independent Variable 2: Sex</strong></h4>
+<ul>
+<li><p>This is a&nbsp;<strong>binary categorical variable</strong>&nbsp;(Male/Female).</p></li>
+<li><p><strong>Justification</strong>: Sex differences in treatment adherence and healthcare experiences are well-documented across chronic illnesses. In the context of sickle cell disease, men and women may have different attitudes toward medication, varying risk perceptions, or differential access to care. Additionally, concerns around fertility or pregnancy while on HU may influence adherence differently by sex.</p></li>
+</ul>
+<hr>
+</section>
+<section id="additional-variables-optional-for-multivariable-models-or-stratified-visuals" class="level4">
+<h4 class="anchored" data-anchor-id="additional-variables-optional-for-multivariable-models-or-stratified-visuals"><strong>Additional Variables (Optional for Multivariable Models or Stratified Visuals)</strong></h4>
+<ul>
+<li><p><strong>Age group</strong>: Categorized into 0–5, 6–12, 13–17, 18–25, 26–45, and 46+.</p></li>
+<li><p><strong>Pain severity</strong>: Measured by SF-36 or harmonized self-report scores.</p></li>
+</ul>
+<p>These variables will be described using frequency tables and visualizations, and may be included in exploratory models if appropriate.</p>
+</section>
+</section>
+<section id="exploratory-data-analysis-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis-statistics">Exploratory Data Analysis: Statistics</h2>
+<p>This table provided from the PLOS ONE article provides more context on the data included in the spreadsheet.</p>
+<p><img src="images/clipboard-251175287.png" class="img-fluid"></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Variable"    "Response"    "Baby HUG"    "C-Data"      "MSH"        
+[6] "SCDIC"       "Walk-PHaSST"</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="POBEE_FINAL_files/figure-html/stats%20hu%20use-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="POBEE_FINAL_files/figure-html/stats%20genotype-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="POBEE_FINAL_files/figure-html/stats%20sex-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The majority of individuals in the dataset are currently using hydroxyurea, with a smaller but notable proportion having discontinued (past use).There is also a non-negligible amount of missing data, which may reflect gaps in documentation or patient reporting across sites. Most participants are in the HbSS/Sβ⁰ genotype category — the most severe form of sickle cell disease — consistent with expectations that this group is more likely to be prescribed hydroxyurea. The HbSC and Sβ⁺ genotypes are present but less common, and an “Other” category accounts for a small percentage.The sex distribution is roughly balanced, with a slight female majority. This balance is useful for assessing whether hydroxyurea discontinuation varies meaningfully by sex, especially in contexts such as fertility-related concerns.</p>
+<section id="further-analysis-graphics-tables-and-commentary" class="level3">
+<h3 class="anchored" data-anchor-id="further-analysis-graphics-tables-and-commentary">Further Analysis: Graphics, Tables, and Commentary</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="POBEE_FINAL_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  Genotype Current  Past DiscontinuationRate
+  &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;               &lt;dbl&gt;
+1 SS&nbsp;/Sb0      242    90                27.1
+2 SC            74    26                26  
+3 Sb+           21     7                25  
+4 Other          4     1                20  
+5 Missing        0     0               NaN  </code></pre>
+</div>
+</div>
+<p>Despite genotype-driven prescribing patterns, hydroxyurea discontinuation is substantial even among patients with the most severe form of sickle cell disease, highlighting a need for deeper inquiry into patient-level and systemic barriers to adherence.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="POBEE_FINAL_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Despite having the most severe clinical course, patients with HbSS/Sβ⁰ do not show dramatically lower discontinuation rates, with all rates ranging between 20-27.1%. This might suggest external barriers—like medication access or provider communication—are impacting even high-risk individuals.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="POBEE_FINAL_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Females show a slightly higher HU discontinuation rate than males. This may reflect gendered differences in health decision-making or concerns related to HU’s reproductive side effects. Although sex differences appear small, the slightly elevated discontinuation among females may reflect reproductive concerns, which could be investigated further through qualitative studies or patient-reported outcome measures.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="POBEE_FINAL_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This visualization shows estimated hydroxyurea (HU) use across self-reported pain severity levels (1–10). Notably, the largest concentration of both current and past HU users occurs at higher pain levels, particularly levels 8–10. This suggests that patients experiencing more frequent or intense pain are more likely to have been prescribed HU—but also that discontinuation remains prevalent even among this high-need group. The persistence of past users at severe pain levels may reflect unmet expectations regarding HU’s effectiveness in pain management or other barriers to continued adherence.</p>
+</section>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<p>This analysis reveals that hydroxyurea (HU) discontinuation cannot be fully explained by genotype, sex, or pain severity alone. Despite clinical assumptions that patients with more severe genotypes (like HbSS/Sβ⁰) would be most adherent due to greater need, the data show comparable discontinuation rates across all genotypes—suggesting that&nbsp;<strong>clinical need does not always translate to sustained use</strong>. This mirrors findings from the Kanter et al.&nbsp;(2024) study, which identified psychosocial barriers, fertility concerns, and provider trust as critical but often overlooked contributors to HU discontinuation.</p>
+<p>Additionally, while females had only slightly higher discontinuation rates than males, this small difference may mask larger,&nbsp;<strong>qualitative disparities</strong>&nbsp;in decision-making contexts—such as fears around reproductive health and medication burden. The disproportionately high number of past HU users in the 8–10 pain severity range also underscores that&nbsp;<strong>pain alone does not guarantee persistence with treatment</strong>, potentially reflecting frustration with unmet expectations or inadequate follow-up support.</p>
+<p>By examining these trends across harmonized datasets, we gain a broader view of the systemic, behavioral, and personal factors that shape treatment adherence. It becomes clear that improving HU uptake and continuity will require&nbsp;<strong>more than prescriptions</strong>—it demands trust-building, culturally sensitive counseling, and proactive patient engagement, especially among adolescents and women of reproductive age.</p>
+<p>Ultimately, this project reinforces the need for sickle cell care models that extend beyond biomedical logic and include&nbsp;<strong>structural and emotional determinants of health</strong>, particularly for marginalized populations. Integrating patient voices into research, practice, and policy will be essential to ensure hydroxyurea reaches its full therapeutic potential across the diverse sickle cell community.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Kanter, J., Bedrosian, C. L., Koduri, S., Byrd, J., Thompson, A. A., Neunert, C., … &amp; Lebensburger, J. D. (2024).&nbsp;<em>Multisite study of hydroxyurea discontinuation among individuals with sickle cell disease</em>. PLOS ONE, 19(3), e0309572.&nbsp;https://doi.org/10.1371/journal.pone.0309572</p>
+<p>Centers for Disease Control and Prevention (CDC). (2022).&nbsp;<em>Sickle cell disease (SCD): Data &amp; statistics</em>.&nbsp;<a href="https://www.cdc.gov/ncbddd/sicklecell/data.html" class="uri">https://www.cdc.gov/ncbddd/sicklecell/data.html</a></p>
+<p>National Institutes of Health (NIH). (2021).&nbsp;<em>Hydroxyurea treatment for sickle cell disease</em>.&nbsp;<a href="https://www.nhlbi.nih.gov/health-topics/hydroxyurea-for-sickle-cell" class="uri">https://www.nhlbi.nih.gov/health-topics/hydroxyurea-for-sickle-cell</a></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
