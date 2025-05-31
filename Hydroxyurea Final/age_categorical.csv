@@ -1,0 +1,9 @@
+Variable,Response,Baby HUG,C-Data,MSH,SCDIC,Walk-PHaSST
+Categorical age,Missing ,100 ,2 ,6 ,28 ,1 
+Categorical age,0-5 ,1 ,946 ,0 ,0 ,0 
+Categorical age,6-12 ,0 ,583 ,0 ,214 ,32 
+Categorical age,13-17 ,0 ,532 ,0 ,791 ,143 
+Categorical age,18-25 ,0 ,501 ,194 ,"1,404 ",313 
+Categorical age,26-45 ,0 ,167 ,157 ,0 ,184 
+Categorical age,46 or older,105 ,884 ,0 ,0 ,0 
+Categorical age,Total ,206 ,"3,615 ",357 ,"2,437 ",673 
