@@ -1,23 +1,47 @@
-# DATS 2102: Data Visualization – Project Portfolio
+# DATS 2102: Data Visualization – Course Portfolio  
+📍 George Washington University | Spring 2025  
+👩🏾‍💻 Created by Aba Pobee
 
-This repository contains selected assignments and my final project from the Data Visualization course (DATS 2102) at The George Washington University.
+Welcome to my data visualization portfolio for DATS 2102 at GWU. This repository includes a collection of relevant assignments and my final project, all centered on using R and Quarto to transform raw data into meaningful insights and compelling visuals.
 
-## 🔍 Contents
+Through this course, I explored data storytelling, geographic mapping, interactive visualizations, and the ethical dimensions of visual communication. Each folder contains original `.qmd` files, rendered HTML reports, and any associated data used to complete the project.
 
-Each folder includes original code, visualizations, and (where possible) sample data. Click through to explore how I used R, Python, and data storytelling techniques to communicate insights.
+---
 
-### Assignments
-- **Assignment 01** – [Short Title]: Focused on exploratory data analysis and bar/line plots using `ggplot2`.
-- **Assignment 02** – [Short Title]: Choropleth mapping with `tmap` and spatial joins.
-- **Assignment 03** – [Short Title]: Interactive Quarto dashboard and time series visualizations.
-- ...
+## 📁 Contents
 
-### Final Project
-- **Hydroxyurea & Sickle Cell Treatment Gaps**: Analyzed clinical data to uncover patterns in treatment discontinuation. Created an HTML dashboard and data visualizations using `ggplot2` and `dplyr`.
+### 🧭 Final Project  
+**[Hydroxyurea and the Gaps in Sickle Cell Treatment](./Final_Project/)**  
+A personally driven analysis exploring the demographic and clinical factors behind hydroxyurea discontinuation among individuals with sickle cell disease, using harmonized participant-level data from five U.S. clinical studies.  
+*Tools used:* R, dplyr, ggplot2, Quarto, health equity frameworks
 
-## 💡 Tools Used
-- R, ggplot2, dplyr, Quarto, MicrobiomeAnalyst, Tableau
-- Python (pandas, matplotlib) for select assignments
+### 📦 Assignments  
+Each assignment folder includes a `.qmd` or `.Rmd` file, HTML output, relevant data, and a short write-up.
+
+- **[Assignment 4: Making Maps](./Assignment_04_Making_Maps/)**  
+  Thematic mapping using `sf`, `left_join()`, and various color schemes to explore unemployment rates in Maryland and alcohol preferences by state.
+
+- **[Assignment 6: U.S. Vote Share Trends](./Assignment_06_Vote_Analysis/)**  
+  Analysis of Republican vote share from 2008 to 2024, including swing plots, interactive tables, and faceted time-series graphs.
+
+---
+
+## 🛠️ Tools & Packages Used
+- `tidyverse` (ggplot2, dplyr, readr, tidyr)
+- `sf` and `tigris` for geospatial data
+- `DT` and `reactable` for interactive tables
+- `quarto` for clean, reproducible reporting
+
+---
+
+## 🔁 Reproducibility
+All `.qmd` files are fully executable and designed for reproducibility. Code chunks are hidden in the final HTML reports for a cleaner presentation but are visible in the source files.
+
+---
 
 ## 📫 Contact
-Questions or feedback? Feel free to reach out or connect with me on [LinkedIn](https://linkedin.com/in/abapobee).
+
+Have questions, feedback, or opportunities?  
+Let’s connect: [LinkedIn](https://www.linkedin.com/in/abapobee)
+
+---
