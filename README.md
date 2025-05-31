@@ -11,7 +11,7 @@ Through this course, I explored data storytelling, geographic mapping, interacti
 ## 📁 Contents
 
 ### 🧭 Final Project  
-**[Hydroxyurea and the Gaps in Sickle Cell Treatment](./Final_Project/)**  
+**[Hydroxyurea and the Gaps in Sickle Cell Treatment](./Hydroxyurea_Final/README.md)**  
 A personally driven analysis exploring the demographic and clinical factors behind hydroxyurea discontinuation among individuals with sickle cell disease, using harmonized participant-level data from five U.S. clinical studies.  
 *Tools used:* R, dplyr, ggplot2, Quarto, health equity frameworks
 
