@@ -18,7 +18,7 @@ A personally driven analysis exploring the demographic and clinical factors behi
 ### 📦 Assignments  
 Each assignment folder includes a `.qmd` or `.Rmd` file, HTML output, relevant data, and a short write-up.
 
-- **[Assignment 4: Making Maps](./4_Making_Maps/)**  
+- **[Assignment 4: Making Maps](./4._Making_Maps/)**  
   Thematic mapping using `sf`, `left_join()`, and various color schemes to explore unemployment rates in Maryland and alcohol preferences by state.
 
 - **[Assignment 6: U.S. Vote Share Trends](./Assignment_06_Vote_Analysis/)**  
