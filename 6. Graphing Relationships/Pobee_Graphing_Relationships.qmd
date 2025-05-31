@@ -1,0 +1,354 @@
+---
+title: "Graphing Relationships"
+format: html
+editor: visual
+author: "Aba Pobee"
+---
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE) 
+```
+## 1. Importing & Manipulating Data, Trump Statistics, Creating Tables
+**The dataset has been pivoted to long format with the year and proportion of votes added as columns.**
+```{r pivoting csv}
+library(tidyverse)
+
+ogvote <- read_csv("state_prez_vote_08-24.csv")
+
+newvote <- ogvote %>%
+  pivot_longer(
+    cols = -c(state, abbrev),
+    names_to = "party_year",
+    values_to = "vote_count"
+  ) %>%
+  mutate(
+    party = case_when(
+      str_detect(party_year, "obama|clinton|biden|Harris") ~ "Democratic",
+      str_detect(party_year, "mccain|romney|trump") ~ "Republican",
+      TRUE ~ NA_character_
+    ),
+    year = str_extract(party_year, "\\d{2,4}") %>% as.integer()
+  ) %>%
+  drop_na(party)
+
+valid_state_years <- newvote %>%
+  group_by(state, year) %>%
+  summarise(n_parties = n_distinct(party), .groups = "drop") %>%
+  filter(n_parties == 2)
+
+newvote <- newvote %>%
+  semi_join(valid_state_years, by = c("state", "year")) %>%
+  group_by(state, year) %>%
+  mutate(
+    total_votes = sum(vote_count, na.rm = TRUE),
+    vote_percent = (vote_count / total_votes) * 100
+  ) %>%
+  ungroup()
+
+head(newvote)
+```
+
+**While Trump’s average vote share declined in 2020 and rebounded in 2024, the consistent level of variation across all three elections reflects ongoing and stable polarization in state-level support.**
+
+```{r trump votes}
+trump_summary <- newvote %>%
+  filter(party == "Republican", party_year %in% c("trumpvote16", "trumpvote20", "trumpvote24")) %>%
+  group_by(year) %>%
+  summarise(
+    Mean_Percent = mean(vote_percent, na.rm = TRUE),
+    SD_Percent = sd(vote_percent, na.rm = TRUE)
+  ) %>%
+  arrange(year)
+
+print(trump_summary)
+
+```
+
+```{r data table}
+library(DT)
+Republicans <- newvote %>%
+  filter(party == "Republican", year %in% c(8, 12, 16, 20, 24)) %>%
+  select(state, year, vote_percent) %>%
+  pivot_wider(
+    names_from = year,
+    values_from = vote_percent,
+    names_prefix = "Year_"
+  ) %>%
+  arrange(state)
+
+datatable(
+  Republicans,
+  options = list(pageLength = 10, scrollX = TRUE),
+  caption = "Republican Vote Proportions by State (2008–2024)",
+  colnames = c("State", "2008", "2012", "2016", "2020", "2024")
+)
+```
+
+## 2. Scatterplot Creation
+
+```{r scatterplot}
+library(tidyverse)
+library(ggrepel)
+
+trump_swing <- newvote %>%
+  filter(party == "Republican", year %in% c(20, 24)) %>%
+  select(state, year, vote_percent) %>%
+  pivot_wider(names_from = year, values_from = vote_percent) %>%
+  drop_na()
+
+colnames(trump_swing)[2:3] <- c("vote_2020", "vote_2024")
+
+ggplot(trump_swing, aes(x = vote_2020, y = vote_2024, label = state)) +
+  geom_point(color = "darkred", size = 2.8) +
+  geom_text_repel(size = 3, max.overlaps = Inf) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  labs(
+    title = "Trump Vote Swing by State (2020 vs. 2024)",
+    subtitle = "States above the line swung toward Trump in 2024",
+    x = "Trump 2020 Vote Share (%)",
+    y = "Trump 2024 Vote Share (%)"
+  ) +
+  scale_x_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 80)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 80)) +
+  theme_minimal()
+
+```
+
+**The scatterplot visualizes Trump’s state-level vote share (%) in 2020 (x-axis) compared to 2024 (y-axis).The overall pattern shows that many states cluster around the 45° line, suggesting minimal change in vote share. However, a few states deviate significantly-- some swing above the line (vote gains), while others fall below (vote losses). For instance, states like Florida and Texas hover near or above the line, while places like Vermont, California, or Washington D.C. remain well below it, showing consistent low support.**
+
+**The dashed 45° reference line serves as a benchmark of no change: any state on this line gave Trump the same proportion of votes in 2024 as in 2020.**
+
+**Labeling all 50 states creates overlap and visual clutter, especially in dense regions where many states have similar values.**
+
+```{r labeling some states}
+highlight_states <- c("District of Columbia", "West Virginia", "Georgia", "Arizona", "Pennsylvania", "Florida")
+
+ggplot(trump_swing, aes(x = vote_2020, y = vote_2024)) +
+  geom_point(color = "darkred", size = 2.8) +
+  geom_text_repel(data = filter(trump_swing, state %in% highlight_states), 
+                  aes(label = state), size = 3) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  labs(
+    title = "Trump Vote Swing by State (2020 vs. 2024)",
+    subtitle = "Only key states are labeled to reduce clutter",
+    x = "Trump 2020 Vote Share (%)",
+    y = "Trump 2024 Vote Share (%)"
+  ) +
+  scale_x_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 80)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 80)) +
+  theme_minimal()
+```
+
+**Altering the graph to only show specific labels surely makes a difference in the plot-- I picked DC to represent the district as an outlier, West Virginia since it has one of the highest proportions of Trump voters for both years, and states like Georgia, Arizona, Pennsylvania, and Florida since they're notable swing states.**
+
+**The District of Columbia stands out from the rest of the data-- all other states have Republican voting proportions between 20 and 80 percent, whereas DC stands alone with around 5 percent... interesting, because DC is the heart of the nation!**
+
+```{r removing DC}
+ggplot(trump_swing, aes(x = vote_2020, y = vote_2024, label = state)) +
+  geom_point(color = "darkred", size = 2.8) +
+  geom_text_repel(size = 3, max.overlaps = Inf) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  labs(
+    title = "Trump Vote Swing by State (2020 vs. 2024)",
+    subtitle = "States above the line swung toward Trump in 2024",
+    x = "Trump 2020 Vote Share (%)",
+    y = "Trump 2024 Vote Share (%)"
+  ) +
+  scale_x_continuous(labels = scales::percent_format(scale = 1), limits = c(20, 80)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(20, 80)) +
+  theme_minimal()
+```
+
+**Removing DC from the graph makes it a little easier to identify other states in the graph and how much they varied from the 45 degree line.**
+
+## 3. Line Graphs
+
+```{r line graph}
+republican_trends <- newvote %>%
+  filter(party == "Republican", state != "District of Columbia") %>%
+  filter(year %in% c(8, 12, 16, 20, 24))
+
+republican_labels <- republican_trends %>%
+  filter(year == 24)
+
+ggplot(republican_trends, aes(x = year, y = vote_percent, group = state)) +
+  geom_line(color = "firebrick", alpha = 0.6) +
+  geom_text_repel(
+    data = republican_labels,
+    aes(label = state),
+    nudge_x = 0.5,
+    size = 3,
+    direction = "y",
+    hjust = 0,
+    segment.color = "gray70",
+    max.overlaps = Inf
+  ) +
+  labs(
+    title = "Republican Vote Share by State (2008–2024)",
+    x = "Year",
+    y = "Vote Share (%)"
+  ) +
+  scale_x_continuous(breaks = c(8, 12, 16, 20, 24), expand = expansion(mult = c(0, 0.1))) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_minimal()
+```
+
+```{r interesting states}
+interesting_states <- c("Utah", "Florida", "Texas", "Georgia", "Arizona", "Wisconsin", "California")
+
+republican_trends <- newvote %>%
+  filter(party == "Republican", state != "District of Columbia") %>%
+  filter(year %in% c(8, 12, 16, 20, 24)) %>%
+  mutate(
+    highlight = if_else(state %in% interesting_states, state, "Other")
+  )
+
+republican_labels <- republican_trends %>%
+  filter(year == 24, state %in% interesting_states)
+
+ggplot(republican_trends, aes(x = year, y = vote_percent, group = state)) +
+  geom_line(aes(color = highlight), size = 1, alpha = 0.8) +
+  geom_text_repel(
+    data = republican_labels,
+    aes(label = state, color = state),
+    nudge_x = 0.5,
+    size = 3,
+    direction = "y",
+    hjust = 0,
+    segment.color = "gray70",
+    max.overlaps = Inf,
+    show.legend = FALSE
+  ) +
+  scale_color_manual(
+    values = c(
+      "Utah" = "#e41a1c", 
+      "Florida" = "#377eb8",
+      "Texas" = "#4daf4a",
+      "Georgia" = "#984ea3",
+      "Arizona" = "#ff7f00",
+      "Wisconsin" = "#a65628",
+      "California" = "#f781bf",
+      "Other" = "gray80"
+    )
+  ) +
+  labs(
+    title = "Republican Vote Share by State (2008–2024)",
+    subtitle = "Highlighted states show distinctive electoral trends",
+    x = "Year",
+    y = "Vote Share (%)",
+    color = "State"
+  ) +
+  scale_x_continuous(breaks = c(8, 12, 16, 20, 24), expand = expansion(mult = c(0, 0.1))) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_minimal()
+```
+
+**Across the 50 states, Republican vote share shows considerable variation, but some broad patterns emerge:**
+
+-   **Many states show stability or slight increases in Republican support, especially after 2016.**
+
+-   **The middle band of states—those with vote shares between 45% and 60%—tend to move incrementally rather than sharply.**
+
+-   **A handful of states show distinct trends, such as steady gains or losses, or sharp fluctuations (e.g., Utah in 2016).**
+
+**This suggests that while some state-level realignments are occurring, much of the country remains relatively politically consistent, reinforcing long-standing partisan divides.**
+
+**Utah stands out as a clear outlier, with a dip in 2016 followed by a rebound. This makes it one of the most visually dynamic lines in the plot. Texas and Florida show gradual increases in Republican support over time. Georgia, Arizona, and Wisconsin hover near the 50% line, reflecting their battleground status and shifting partisan balance. California continues to show very low Republican vote share, reinforcing its position as a Democratic stronghold.**
+
+**Color is used intentionally to emphasize a diverse set of states that each represent a distinct electoral narrative:**
+
+-   **Utah (red): Highlights a unique trajectory with sharp swings and recovery, reflecting ideological nuances within the Republican base.**
+
+-   **Florida & Texas (blue & green): Represent growing Republican strength in large, diverse states.**
+
+-   **Georgia, Arizona, Wisconsin (purple, orange, brown): All are swing states that have shifted party allegiance in recent elections, making them crucial to understanding national electoral dynamics.**
+
+-   **California (pink): Serves as a contrast case—one of the least supportive states for Republican candidates, moving even lower over time.**
+
+**This combination of states allows the plot to tell a story of divergence. The use of muted gray for all other states ensures that the focus remains on these key trajectories.**
+
+```{r census regions}
+#adding the census things...
+newvote <- newvote %>%
+  mutate(region = case_when(
+    state %in% c("Maine", "New Hampshire", "Vermont", "Massachusetts", "Rhode Island", "Connecticut") ~ "Northeast",
+    state %in% c("New York", "New Jersey", "Pennsylvania") ~ "Mid-Atlantic",
+    state %in% c("Ohio", "Indiana", "Illinois", "Michigan", "Wisconsin", "Minnesota", "Iowa", "Missouri", "North Dakota", "South Dakota", "Nebraska", "Kansas") ~ "Midwest",
+    state %in% c("Delaware", "Maryland", "Virginia", "West Virginia", "North Carolina", "South Carolina", "Georgia", "Florida", "Kentucky", "Tennessee", "Alabama", "Mississippi", "Arkansas", "Louisiana") ~ "South",
+    state %in% c("Texas", "Oklahoma") ~ "Southwest",
+    state %in% c("Montana", "Idaho", "Wyoming", "Colorado", "Utah", "Nevada", "Arizona", "New Mexico") ~ "Mountain West",
+    state %in% c("Alaska", "Washington", "Oregon", "California", "Hawaii") ~ "Pacific West",
+    TRUE ~ NA_character_
+  ))
+
+regional_plot_data <- newvote %>%
+  filter(party == "Republican", state != "District of Columbia", year %in% c(8, 12, 16, 20, 24)) %>%
+  drop_na(region)
+
+ggplot(regional_plot_data, aes(x = year, y = vote_percent, group = state, color = region)) +
+  geom_line(size = 0.9, alpha = 0.7) +
+  facet_wrap(~region, scales = "free_y") +
+  labs(
+    title = "Republican Vote Share by State and Census Region (2008–2024)",
+    subtitle = "Each region is color-coded and faceted to reveal regional voting patterns",
+    x = "Year",
+    y = "Vote Share (%)",
+    color = "Region"
+  ) +
+  scale_x_continuous(breaks = c(8, 12, 16, 20, 24)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_minimal() +
+  theme(
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+```
+**Each region has a unique color, improving clarity within the facets. Facets separate regions, so overlapping lines are more readable. Now, one can easily compare regional trends and intra-regional consistency.**
+
+## 4. Thematic Map
+
+```{r delta variable}
+trump_swing_map <- newvote %>%
+  filter(party == "Republican", year %in% c(20, 24)) %>%
+  select(state, year, vote_percent) %>%
+  pivot_wider(names_from = year, values_from = vote_percent, names_prefix = "vote_") %>%
+  mutate(
+    state = tolower(state),
+    vote_change = vote_24 - vote_20
+  )
+```
+
+```{r shapefileeee}
+library(maps)
+library(sf)
+
+states_map <- map_data("state") %>%
+  st_as_sf(coords = c("long", "lat"), crs = 4326, agr = "constant") %>%
+  group_by(region, group) %>%
+  summarise(do_union = FALSE) %>%
+  ungroup() %>%
+  st_cast("POLYGON") %>%
+  rename(state = region)
+
+swing_states_sf <- states_map %>%
+  left_join(trump_swing_map, by = "state")
+```
+
+```{r thematic map}
+ggplot(swing_states_sf) +
+  geom_sf(aes(fill = vote_change), color = "white") +
+  scale_fill_gradient2(
+    low = "blue", mid = "white", high = "red", midpoint = 0,
+    name = "Trump Vote Swing\n(2024 - 2020)",
+    labels = scales::percent_format(scale = 1)
+  ) +
+  labs(
+    title = "Change in Trump Vote Proportion by State (2024 vs. 2020)",
+    caption = "Data: newvote + maps::state"
+  ) +
+  theme_minimal()
+```
+
+**The map shows how Trump’s support changed from 2020 to 2024 across different states. States in red are where he gained more support in 2024 compared to 2020. You can easily see that he did better in many Southern states, like Florida, Georgia, and Texas, and also in some parts of the West and Northeast, like California and New York.**
+
+**Compared to the earlier scatterplot, this map makes it much easier to spot patterns across regions. Instead of just numbers, it shows you where things changed on the map. You can quickly tell which parts of the country are becoming more supportive of Trump, and which areas stayed the same.**
+
